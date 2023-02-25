@@ -49,7 +49,7 @@ restore
 
 **********************************************************************
 
-**# 遗漏变量+测量误差 (工具变量:internet_penetration, isi)
+**# 遗漏变量+测量误差 (工具变量: internet_penetration, isi)
 **# 1.排他性检验: Y=IV+C → Y=IV+X+C
 reg bank_loan_restrict_rate isi $restrict_control i.industry i.company_ownership i.bank_type [aweight=weight], r
 estimates store withoutX 
