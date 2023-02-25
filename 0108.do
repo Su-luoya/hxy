@@ -1,5 +1,5 @@
 **# 导入数据
-import delimited "C:\Users\25930\Nutstore\1\hxy", clear
+import delimited "C:\Users\25930\Nutstore\1\hxy\test.csv", clear
 
 **# 控制变量
 global restrict_control "size age age2 asset tax_tolerance employee_number gdp_2_proportion reserve_rate loan_rate_annual"
@@ -49,33 +49,39 @@ restore
 
 **********************************************************************
 
-**# 遗漏变量+测量误差 (工具变量: insurance_depth distance_sphere)
-**# 1.排他性检验: Y=IV+C → Y=IV+X+C 
-reg bank_loan_restrict_rate insurance_depth distance_sphere $restrict_control i.industry i.company_ownership i.bank_type [aweight=weight], r
+**# 遗漏变量+测量误差 (工具变量: insurance_depth distance_sphere user_number,internet_penetration,user_size_growth_rate distance_metres distance_miles distance_sphere)
+**# 1.排他性检验: Y=IV+C → Y=IV+X+C distance_sphere
+reg bank_loan_restrict_rate isi $restrict_control i.industry i.company_ownership i.bank_type [aweight=weight], r
 estimates store withoutX 
-reg bank_loan_restrict_rate dfh insurance_depth distance_sphere $restrict_control i.industry i.company_ownership i.bank_type [aweight=weight], r
+reg bank_loan_restrict_rate dfh isi $restrict_control i.industry i.company_ownership i.bank_type [aweight=weight], r
+estimates store withX 
+estimates table withoutX withX, star (0.05 0.01 0.001)
+
+reg bank_loan_restrict_rate internet_penetration $restrict_control i.industry i.company_ownership i.bank_type [aweight=weight], r
+estimates store withoutX 
+reg bank_loan_restrict_rate dfh internet_penetration $restrict_control i.industry i.company_ownership i.bank_type [aweight=weight], r
 estimates store withX 
 estimates table withoutX withX, star (0.05 0.01 0.001)
 
 **# 2.两阶段最小二乘: 
-// b=-0.405>-0.580(主要为解释变量的测量误差导致向下偏差),p=0.000
-**# 2.1 第一阶段: b=0.046,-0.035 p=0.000,0.000
-ivregress 2sls bank_loan_restrict_rate $restrict_control i.industry i.company_ownership i.bank_type (dfh=insurance_depth distance_sphere), r first
-**# 2.2豪斯曼检验: p=0.0509,0.0522
+// b=-0.579>-0.580(主要为解释变量的测量误差导致向下偏差),p=0.000
+**# 2.1 第一阶段: b=1.033,-0.064 p=0.000,0.000
+ivregress 2sls bank_loan_restrict_rate $restrict_control i.industry i.company_ownership i.bank_type (dfh=isi internet_penetration), r first
+**# 2.2豪斯曼检验: p=0.0597,0.0618
 estat endogenous
-**# 2.3弱工具变量检验: F=2357.08>19.93
+**# 2.3弱工具变量检验: F=13878.3>19.93
 estat firststage, all forcenonrobust
-**# 2.4过度识别约束检验: p=0.2516
+**# 2.4过度识别约束检验: p=0.9590
 estat overid
 
-**# 3.Heckman-IV：b=-0.566,p=-0.000
+**# 3.Heckman-IV：b=-0.622,p=0.000
 preserve
 qui probit miss_group missing_number repayment_capacity $restrict_control i.industry i.company_ownership i.bank_type, r
 predict z if e(sample), xb
 generate phi=normalden(z)
 generate PHI=normal(z)
 generate lambda=phi/(1-PHI)
-ivregress 2sls bank_loan_restrict_rate lambda $restrict_control i.industry i.company_ownership i.bank_type (dfh=insurance_depth distance_sphere), r first
+ivregress 2sls bank_loan_restrict_rate lambda $restrict_control i.industry i.company_ownership i.bank_type (dfh=isi internet_penetration), r first
 restore
 
 **********************************************************************
