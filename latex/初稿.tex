@@ -1,0 +1,110 @@
+\documentclass[AutoFakeBold,12pt]{ctexart}
+\usepackage[left=3.17cm,right=3.17cm,top=2.54cm,bottom=2.54cm]{geometry}
+
+% 参考文献
+\usepackage[numbers,sort]{natbib} 
+\setlength{\bibsep}{8pt}
+\def\bibfont{\fontsize{10pt}{10pt}\selectfont}
+
+\setmainfont{SimSun} % 中文字体
+
+\renewcommand{\baselinestretch}{1.5} % 行间距
+\renewcommand{\arraystretch}{0.7} % 表格行距
+
+\usepackage{fontspec}
+\setmainfont{Times New Roman} % 英文字体
+
+\pagestyle{plain} % 页眉为空，页脚为页码
+
+\usepackage{amsmath}  % 数学公式
+\usepackage{graphicx} % 插入图片
+\usepackage{float}  % 设置图片浮动位置
+\usepackage{caption} % 标题设置
+\renewcommand{\captionfont}{\zihao{5}}
+
+% 三线表
+\usepackage{threeparttable}
+\usepackage{tabularx}
+\usepackage{booktabs}
+
+\usepackage{titlesec} %自定义多级标题格式
+\titleformat{\section}[block]{\center\songti\zihao{-4}\bfseries}{\chinese{section}、}{0em}{}[]
+\titleformat{\subsection}[block]{\raggedright\songti\zihao{-4}\bfseries}{\quad\quad（\chinese{subsection}）}{0em}{}[]
+\titlespacing*{\section}{0pt}{0.3\baselineskip}{0.2\baselineskip}
+\titlespacing*{\subsection}{0pt}{0.3\baselineskip}{0.2\baselineskip}
+
+\title{\zihao{-4}\bfseries{标题}}
+
+\usepackage{authblk}
+\renewcommand*{\Authand}{，}
+\author{\zihao{-4}黄茜瑛\thanks{湖南大学本科}\and \vspace{-25pt}\zihao{-4}邓皓天\thanks{湖南大学本科}}
+
+\date{}
+
+\begin{document}
+
+\maketitle
+\vspace{-25pt}
+{\noindent\bf 摘要：}
+巴拉巴拉
+
+{\noindent\bf 关键字：}
+巴拉巴拉；
+\
+巴拉巴拉；
+\
+巴拉巴拉；
+\
+巴拉巴拉；
+\
+巴拉巴拉
+
+
+\section{引言}
+
+巴拉巴拉123sss是
+
+\section{文献回顾与研究假设}
+
+巴拉巴拉123sdf$adf\alpha$
+
+
+
+$ $
+
+\renewcommand\refname{}
+
+{\noindent\bfseries{参考文献：}}
+% \vspace{-25pt}
+\begin{thebibliography}{50}
+    \bibitem{ref01} 123
+    \bibitem{ref02} 123
+\end{thebibliography}
+
+\bibliographystyle{unsrt} % 参考文献的样式
+
+{\zihao{5}
+    \bibliography{ref}   % 参考文献
+}
+
+
+\newpage
+\begin{center}
+    \textbf{Caption}
+\end{center}
+
+{\noindent\bf Abstract:}
+bala
+
+{\noindent\bf Keywords:}
+bala,
+\
+bala,
+\
+bala,
+\
+bala,
+\
+bala
+
+\end{document}
