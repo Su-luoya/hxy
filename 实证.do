@@ -18,7 +18,7 @@ estat vif // 共线性诊断
 **********************************************************************
 
 **# 稳健性检验
-**# 1.替换估计方法: b=-4.281,p=0.000 
+**# 1.替换估计方法: b=-4.276,p=0.000 
 tobit bank_loan_restrict_rate dfh $restrict_control i.industry i.company_ownership i.bank_type [aweight=weight], ll ul
 **# 2.替换解释变量 
 // coverage_breadth usage_depth credit digitization_level
