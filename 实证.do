@@ -1,11 +1,14 @@
 **# 导入数据
-import delimited "C:\Users\25930\Nutstore\1\hxy\test.csv", clear
+import delimited "D:\github\hxy\data\test.csv", clear
 
 **# 控制变量
 global restrict_control "size age age2 asset tax_tolerance employee_number gdp_2_proportion reserve_rate loan_rate_annual"
 // 固定效应: i.industry i.company_ownership i.bank_type
 // 被遗弃: company_type manage_system gdp_index_per
 
+**# 描述性统计
+outreg2 using Table1.xls, sum(log) bdec(4) tdec(2) keep(dfh  bank_loan_restrict_rate internet_penetration isi repayment_capacity  $restrict_control) title(Decriptive statistics) replace
+* is_inno is_inno_product_output is_inno_tech_output is_buy_internet buy_internet_amount buy_internet_rate buy_internet_rate is_sell_internet private_loan_restrict_rate treat_cost loan_preference_2
 **********************************************************************
 
 **# 基准回归: b=-0.580,p=0.000 
