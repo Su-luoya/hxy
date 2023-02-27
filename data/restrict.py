@@ -2,7 +2,7 @@
 # @Author: 昵称有六个字
 # @Date:   2023-02-22 23:49:06
 # @Last Modified by:   昵称有六个字
-# @Last Modified time: 2023-02-25 21:52:12
+# @Last Modified time: 2023-02-27 20:59:19
 # -- coding: utf-8 --
 import warnings
 from pprint import pprint
@@ -65,8 +65,10 @@ class Pre(object):
     """预处理"""
 
     # 读取原始数据
-    df = pd.read_csv("origin/data.csv", encoding="unicode_escape", low_memory=False)
-    df_class = pd.read_excel("origin/class.xlsx")
+    df = pd.read_csv(
+        "data/origin/data.csv", encoding="unicode_escape", low_memory=False
+    )
+    df_class = pd.read_excel("data/origin/class.xlsx")
     # 原始数据初步处理
     data = Data(df, df_class)
     df = data.df
@@ -160,7 +162,9 @@ class Pre(object):
     def region_dict(self) -> dict:
         """{province:region}"""
         return (
-            pd.read_excel("class/region.xlsx").set_index("province")["region"].to_dict()
+            pd.read_excel("data/class/region.xlsx")
+            .set_index("province")["region"]
+            .to_dict()
         )
 
     @property
@@ -172,7 +176,7 @@ class Pre(object):
         }
         """
         return (
-            pd.read_excel("class/industry.xlsx")
+            pd.read_excel("data/class/industry.xlsx")
             .set_index("industry")[
                 [
                     "industry_question",
@@ -186,7 +190,7 @@ class Pre(object):
 
     @property
     def bank_dict(self) -> dict:  # todo//
-        df_bank = pd.read_excel("class/banktype.xlsx")
+        df_bank = pd.read_excel("data/class/banktype.xlsx")
         df_bank["bank_type"] = df_bank["bank_type"].astype(int)
         return df_bank.set_index("bank_type")[
             ["bank_type_dfh", "bank_type_bfi", "bank_type_bflpi"]
@@ -1255,17 +1259,16 @@ class Controls(Debt):
 
     def age(self):
         """企业年龄:2016-A1006"""
-        self.df_result["age"] = (
-            2015
-            - self.df["a1006"].astype(float)
-            # .map(lambda x: float(x) if x is not np.nan else x)
-        ) * 12 + (
-            12
-            - self.df["a1006a"].map(
-                lambda x: np.log(float(x) + 1) if x is not np.nan else x
-            )
+        self.df_result["age"] = (2015 - self.df["a1006"].astype(float)) * 12 + (
+            12 - self.df["a1006a"].astype(float)
         )
         self.df_result["age^2"] = np.power(self.df_result["age"], 2)
+        self.df_result["age"] = self.df_result["age"].map(
+            lambda x: np.log(x + 1) if x is not np.nan else x
+        )
+        self.df_result["age^2"] = self.df_result["age^2"].map(
+            lambda x: np.log(x + 1) if x is not np.nan else x
+        )
 
     def asset(self):
         """企业资产:log(A1009)"""
@@ -1412,14 +1415,14 @@ class Controls(Debt):
 
     def gdp(self):
         """GDP:三大产业+产业贡献度+指数"""
-        self.merge_province(pd.read_csv("controls/gdp.csv"))
+        self.merge_province(pd.read_csv("data/controls/gdp.csv"))
 
     """company"""
 
     def sme_operation_index_region(self):
         """小微企业运行指数(分地区)"""
         dic = (
-            pd.read_csv("controls/company/小微企业运行指数(region+month).csv")
+            pd.read_csv("data/controls/company/小微企业运行指数(region+month).csv")
             .groupby("region")["sme_operation_index"]
             .mean()
             .to_dict()
@@ -1433,7 +1436,7 @@ class Controls(Debt):
         if "industry" not in self.df_result.columns:
             self.industry()
         dic = (
-            pd.read_csv("controls/company/小微企业运行指数(industry+month).csv")
+            pd.read_csv("data/controls/company/小微企业运行指数(industry+month).csv")
             .groupby("industry_sme_work")["sme_operation_index_industry"]
             .mean()
             .to_dict()
@@ -1447,12 +1450,14 @@ class Controls(Debt):
     def insurance_institution(self):
         """保险类金融机构分布（province+year）"""
         self.merge_province(
-            pd.read_csv("controls/institution/保险类金融机构分布表（province+year）.csv")
+            pd.read_csv("data/controls/institution/保险类金融机构分布表（province+year）.csv")
         )
 
     def bank_institution(self):
         """银行金融机构分布（banktype+province+year）"""
-        df = pd.read_csv("controls/institution/银行金融机构分布表（banktype+province+year）.csv")
+        df = pd.read_csv(
+            "data/controls/institution/银行金融机构分布表（banktype+province+year）.csv"
+        )
         df["province"] = self.delete_pc(df["province"])
         columns = [
             "outlet_num",
@@ -1498,7 +1503,7 @@ class Controls(Debt):
         if "bank_type" not in self.df_result.columns:
             self.bank_type()
         df_worker = pd.read_csv(
-            "controls/institution/银行业金融机构法人机构及从业人员表（banktype+year）.csv"
+            "data/controls/institution/银行业金融机构法人机构及从业人员表（banktype+year）.csv"
         )
         worker_dict = (
             df_worker[df_worker["year"].astype(int) == 2014]
@@ -1520,7 +1525,7 @@ class Controls(Debt):
         columns = ["bank_bloomindex", "bank_profitindex"]
         self.df_result[columns] = pd.merge(
             self.df_result[["open_year"]],
-            pd.read_csv("controls/institution/银行业景气与盈利指数表（year）.csv")
+            pd.read_csv("data/controls/institution/银行业景气与盈利指数表（year）.csv")
             .groupby("year")
             .mean()
             .reset_index(drop=False)
@@ -1551,7 +1556,7 @@ class Controls(Debt):
 
     def loan_balance(self):
         """金融机构贷款余额"""
-        df_balance = pd.read_csv("controls/loan/金融机构贷款表（industry+year）.csv")
+        df_balance = pd.read_csv("data/controls/loan/金融机构贷款表（industry+year）.csv")
         columns = ["local_foreign_balance", "local_balance", "foreign_balance"]
         self.industry_merge(
             df=df_balance, columns=columns, industry_name="industry_financial_loan"
@@ -1559,7 +1564,9 @@ class Controls(Debt):
 
     def loan_balance_small(self):
         """金融机构境内大中小微企业人民币贷款"""
-        df_balance = pd.read_csv("controls/loan/金融机构境内大中小微企业人民币贷款（industry+year）.csv")
+        df_balance = pd.read_csv(
+            "data/controls/loan/金融机构境内大中小微企业人民币贷款（industry+year）.csv"
+        )
         df_balance = df_balance[df_balance["scale"] == "小型企业"]
         columns = ["fina_loan_balance"]
         self.industry_merge(
@@ -1569,7 +1576,7 @@ class Controls(Debt):
     def small_loan_balance(self):
         """小额贷款公司基本情况（province+quarter）"""
         self.merge_province(
-            pd.read_csv("controls/loan/小额贷款公司基本情况表（province+quarter）.csv")
+            pd.read_csv("data/controls/loan/小额贷款公司基本情况表（province+quarter）.csv")
             .groupby(["year", "province"])
             .mean()
             .reset_index(drop=False)
@@ -1582,7 +1589,7 @@ class Controls(Debt):
         if "open_year" not in self.df_result.columns:
             self.open_year()
         approval_dict = (
-            pd.read_csv("controls/loan/银行业贷款审批指数表（quarter）.csv")
+            pd.read_csv("data/controls/loan/银行业贷款审批指数表（quarter）.csv")
             .groupby("year")
             .mean()["bank_loan_approval"]
             .to_dict()
@@ -1607,7 +1614,7 @@ class Controls(Debt):
             "small_loan_demand",
         ]
         demand_dict = (
-            pd.read_csv("controls/loan/银行业贷款需求指数表（quarter）.csv")
+            pd.read_csv("data/controls/loan/银行业贷款需求指数表（quarter）.csv")
             .groupby("year")
             .mean()[columns]
             .to_dict()
@@ -1623,7 +1630,7 @@ class Controls(Debt):
         if "bank_type" not in self.df_result.columns:
             self.bank_type()
         dfh_bank_dict = (
-            pd.read_csv("controls/loan/银行业金融机构普惠小微企业贷款表（banktype+quarter）.csv")
+            pd.read_csv("data/controls/loan/银行业金融机构普惠小微企业贷款表（banktype+quarter）.csv")
             .set_index("bank_type_dfh")["sme_loan_balance"]
             .to_dict()
         )
@@ -1638,7 +1645,7 @@ class Controls(Debt):
             self.bank_type()
         """银行用于法人小微企贷款余额"""
         legal_bank_dict = (
-            pd.read_csv("controls/loan/银行用于法人小微企业贷款表（banktype+quarter）.csv")
+            pd.read_csv("data/controls/loan/银行用于法人小微企业贷款表（banktype+quarter）.csv")
             .groupby("bank_type_dfh")
             .mean()["legal_loan_balance"]
             .to_dict()
@@ -1916,8 +1923,8 @@ class Interest(Controls):
         """其他宏观利率"""
         # 导入并合并（方式“outer”）
         self.df_other_rate = pd.merge(
-            pd.read_csv("rate/reserve_rate.csv"),
-            pd.read_csv("rate/loan_rate.csv"),
+            pd.read_csv("data/rate/reserve_rate.csv"),
+            pd.read_csv("data/rate/loan_rate.csv"),
             how="outer",
         )
         # 添加每年的“1/1”和“12/31”
@@ -2259,7 +2266,7 @@ class Result(Pre):
         interest.all()
         missing = Missing()
         missing.all()
-        df_factor = pd.read_csv("knowledge/factor.csv")
+        df_factor = pd.read_csv("data/knowledge/factor.csv")
         weight_list = [27.714, 22.008, 16.713]
         weight_list = list(map(lambda x: x / sum(weight_list), weight_list))
         df_factor["knowledge"] = (
@@ -2332,7 +2339,7 @@ class Result(Pre):
         self.weight()
         self.log_cal()
         self.winsorize_vars()
-        self.df_result.to_csv("test.csv", index=False)
+        self.df_result.to_csv("data/test.csv", index=False)
         ic(self.df_result)
 
 
@@ -2367,7 +2374,7 @@ if __name__ == "__main__":
     # knowledge = Knowledge()
     # knowledge.all()
     # print(knowledge.df_result.head(20))
-    # knowledge.df_result.to_csv('knowledge/knowledge.csv',index=False)
+    # knowledge.df_result.to_csv('data/knowledge/knowledge.csv',index=False)
 
     # missing = Missing()
     # missing.all()
