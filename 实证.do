@@ -1,11 +1,14 @@
 **# 导入数据
-import delimited "C:\Users\25930\Nutstore\1\hxy\test.csv", clear
+import delimited "D:\github\hxy\data\test.csv", clear
 
 **# 控制变量
 global restrict_control "size age age2 asset tax_tolerance employee_number gdp_2_proportion reserve_rate loan_rate_annual"
 // 固定效应: i.industry i.company_ownership i.bank_type
 // 被遗弃: company_type manage_system gdp_index_per
 
+**# 描述性统计
+outreg2 using Table1.xls, sum(log) bdec(4) tdec(2) keep(dfh  bank_loan_restrict_rate internet_penetration isi repayment_capacity  $restrict_control) title(Decriptive statistics) replace
+* is_inno is_inno_product_output is_inno_tech_output is_buy_internet buy_internet_amount buy_internet_rate buy_internet_rate is_sell_internet private_loan_restrict_rate treat_cost loan_preference_2
 **********************************************************************
 
 **# 基准回归: b=-0.580,p=0.000 
@@ -15,7 +18,7 @@ estat vif // 共线性诊断
 **********************************************************************
 
 **# 稳健性检验
-**# 1.替换估计方法: b=-4.281,p=0.000 
+**# 1.替换估计方法: b=-4.276,p=0.000 
 tobit bank_loan_restrict_rate dfh $restrict_control i.industry i.company_ownership i.bank_type [aweight=weight], ll ul
 **# 2.替换解释变量 
 // coverage_breadth usage_depth credit digitization_level
@@ -50,7 +53,7 @@ restore
 **********************************************************************
 
 **# 遗漏变量+测量误差 (工具变量:internet_penetration, isi)
-**# 1.排他性检验: Y=IV+C → Y=IV+X+C distance_sphere
+**# 1.排他性检验: Y=IV+C → Y=IV+X+C
 reg bank_loan_restrict_rate isi $restrict_control i.industry i.company_ownership i.bank_type [aweight=weight], r
 estimates store withoutX 
 reg bank_loan_restrict_rate dfh isi $restrict_control i.industry i.company_ownership i.bank_type [aweight=weight], r
