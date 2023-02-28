@@ -2,7 +2,7 @@
 # @Author: 昵称有六个字
 # @Date:   2023-02-22 23:49:06
 # @Last Modified by:   昵称有六个字
-# @Last Modified time: 2023-02-27 20:59:19
+# @Last Modified time: 2023-02-28 21:34:43
 # -- coding: utf-8 --
 import warnings
 from pprint import pprint
@@ -393,6 +393,18 @@ class Debt(Private):
         self.df_result["is_need_bank_loan"] = self.df["e1015"].map(
             {"1": 0, "2": 1, "3": 1, "4": 1}
         )
+        # 是否需要贷款
+        self.df_result["is_need_bank_loan_pro"] = self.df["e1015"]
+        # 贵企业没有申请银行/信用社贷款的原因有哪些？
+        for reason in range(1, 9):
+            self.df_result[f"no_apply_bank_loan_reason_{reason}"] = self.df[
+                f"e1017_{reason}_mc"
+            ]
+        # 贵企业未能从银行/信用社获得贷款的原因有哪些？
+        for reason in range(1, 9):
+            self.df_result[f"no_receive_bank_loan_reason_{reason}"] = self.df[
+                f"e1018_{reason}_mc"
+            ]
 
     def bank_loan_need(self):
         """需要多少银行贷款"""
