@@ -1,5 +1,6 @@
-**# 导入数据
-import delimited "D:\github\hxy\data\test.csv", clear
+**# 导入数据 
+// import delimited "D:\github\hxy\data\test.csv", clear
+import delimited "C:\Users\19319\iCloudDrive\Desktop\hxy\data\test.csv", clear
 
 **# 控制变量
 global restrict_control "size age age2 asset tax_tolerance employee_number gdp_2_proportion reserve_rate loan_rate_annual"
@@ -185,7 +186,7 @@ center dfh private_loan_restrict_rate
 reg bank_loan_restrict_rate dfh private_loan_restrict_rate c.c_private_loan_restrict_rate#c.c_dfh $restrict_control i.industry i.company_ownership i.bank_type [aweight=weight], r
 **# 2.1分招待费
 reg bank_loan_restrict_rate dfh private_loan_restrict_rate c.c_private_loan_restrict_rate#c.c_dfh $restrict_control i.industry i.company_ownership i.bank_type [aweight=weight] if treat_cost_group==1, r // p=0.000,0.000, n=1263
-reg bank_loan_restrict_rate dfh private_loan_restrict_rate c.c_private_loan_restrict_rate#c.c_dfh $restrict_control i.industry i.company_ownership i.bank_type [aweight=weight] if treat_cost_group==0, r // p=0.024,0.022, n=1162
+reg bank_loan_restrict_rate dfh private_loan_restrict_rate c.c_private_loan_restrict_rate#c.c_dfh $restrict_control i.province i.industry i.company_ownership i.bank_type [aweight=weight] if treat_cost_group==0, r // p=0.024,0.022, n=1162
 **# 2.2分融资偏好
 reg bank_loan_restrict_rate dfh private_loan_restrict_rate c.c_private_loan_restrict_rate#c.c_dfh $restrict_control i.industry i.company_ownership i.bank_type [aweight=weight] if loan_preference_2==1, r // p=0.014,0.157, n=1263
 reg bank_loan_restrict_rate dfh private_loan_restrict_rate c.c_private_loan_restrict_rate#c.c_dfh $restrict_control i.industry i.company_ownership i.bank_type [aweight=weight] if loan_preference_2!=1, r // p=0.002,0.001, n=1229

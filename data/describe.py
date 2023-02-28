@@ -2,7 +2,7 @@
 # @Author: 昵称有六个字
 # @Date:   2023-02-28 20:59:12
 # @Last Modified by:   昵称有六个字
-# @Last Modified time: 2023-02-28 21:46:21
+# @Last Modified time: 2023-02-28 22:18:35
 import pandas as pd
 from icecream import ic
 from ydata_profiling import ProfileReport
@@ -34,5 +34,6 @@ df = df[y + x + controls + i_list + others + interesting_list].dropna(
 )
 ic(df)
 # df.to_csv("data/describe.csv", index=False)
-profile = ProfileReport(df)
-profile.to_file("data/describe.html")
+# profile = ProfileReport(df)
+# profile.to_file("data/describe.html")
+df[y + x + controls + i_list].describe().to_excel("describe.xlsx", index=1)
