@@ -8,19 +8,24 @@ global restrict_control "size age age2 asset tax_tolerance employee_number gdp_2
 // 被遗弃: company_type manage_system gdp_index_per
 
 **# 描述性统计
-outreg2 using Table1.xls, sum(log) bdec(4) tdec(2) keep(dfh  bank_loan_restrict_rate internet_penetration isi repayment_capacity  $restrict_control) title(Decriptive statistics) replace
+outreg2 using Table1.xls, sum(log) bdec(3) tdec(2) keep(dfh  bank_loan_restrict_rate internet_penetration isi repayment_capacity  $restrict_control) title(Decriptive statistics) replace
 * is_inno is_inno_product_output is_inno_tech_output is_buy_internet buy_internet_amount buy_internet_rate buy_internet_rate is_sell_internet private_loan_restrict_rate treat_cost loan_preference_2
 **********************************************************************
 
 **# 基准回归: b=-0.580,p=0.000 
 reg bank_loan_restrict_rate dfh $restrict_control i.industry i.company_ownership i.bank_type [aweight=weight], r
 estat vif // 共线性诊断
+**# 输出
+outreg2 using table2.doc, keep(dfh $restrict_control) tstat bdec(3) e(F) adec(3) tdec(2) ctitle("ols") replace
+
 
 **********************************************************************
 
 **# 稳健性检验
 **# 1.替换估计方法: b=-4.276,p=0.000 
 tobit bank_loan_restrict_rate dfh $restrict_control i.industry i.company_ownership i.bank_type [aweight=weight], ll ul
+**# 输出
+outreg2 using table2.xls, keep(dfh $restrict_control) tstat bdec(3) e(F) adec(3) tdec(2) ctitle("tobit") replace
 **# 2.替换解释变量 
 // coverage_breadth usage_depth credit digitization_level
 qui reg bank_loan_restrict_rate coverage_breadth $restrict_control i.industry i.company_ownership i.bank_type [aweight=weight], r
@@ -32,8 +37,11 @@ estimates store credit
 qui reg bank_loan_restrict_rate digitization_level $restrict_control i.industry i.company_ownership i.bank_type [aweight=weight], r
 estimates store digitization_level // 符号反了
 estimates table coverage_breadth usage_depth credit digitization_level
+**# 输出
+outreg2 using table2.xls, append keep(dfh $restrict_control) tstat bdec(3) e(F) adec(3) tdec(2) ctitle("tobit") addtext(Year,Yes,Industry,Yes) replace
 **# 3.替换被解释变量: b=-6.842,p=0.000
 reg bank_loan_restrict dfh $restrict_control i.industry i.company_ownership i.bank_type [aweight=weight], r
+outreg2 using table2.xls, keep(dfh $restrict_control) tstat bdec(3) e(F) adec(3) tdec(2) ctitle("ols") replace
 **# 4.加入遗漏变量: gdp_index_per i.company_type i.manage_system
 // b=-0.561,p=0.000
 reg bank_loan_restrict_rate dfh gdp_index_per $restrict_control i.industry i.company_ownership i.bank_type i.company_type i.manage_system [aweight=weight], r

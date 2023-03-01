@@ -1,1 +1,0 @@
-'size','age','age2','asset','tax_tolerance','employee_number','gdp_2_proportion','reserve_rate','loan_rate_annual'
