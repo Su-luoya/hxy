@@ -2,7 +2,8 @@
 # @Author: 昵称有六个字
 # @Date:   2023-02-28 20:59:12
 # @Last Modified by:   昵称有六个字
-# @Last Modified time: 2023-02-28 22:18:35
+# @Last Modified time: 2023-03-02 21:28:13
+import math
 import pandas as pd
 from icecream import ic
 from ydata_profiling import ProfileReport
@@ -29,11 +30,13 @@ interesting_list = (
     + [f"no_receive_bank_loan_reason_{i}" for i in range(1, 9)]
     + ["is_private_loan", "is_need_private_loan"]
 )
-df = df[y + x + controls + i_list + others + interesting_list].dropna(
-    subset=y + x + controls + i_list + others
+miss_group = ["miss_group", "missing_number", "repayment_capacity"]
+df = df[y + x + controls + i_list + others + miss_group].dropna(
+    subset=controls + i_list + others + miss_group
 )
 ic(df)
 # df.to_csv("data/describe.csv", index=False)
 # profile = ProfileReport(df)
 # profile.to_file("data/describe.html")
-df[y + x + controls + i_list].describe().to_excel("describe.xlsx", index=1)
+df['missing_number'] = df['missing_number'].map(lambda x:math.exp(x)-1)
+df[miss_group].to_excel("describe.xlsx", index=0)

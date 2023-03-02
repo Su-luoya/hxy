@@ -63,22 +63,23 @@ restore
 
 **# 遗漏变量+测量误差 (工具变量:internet_penetration, isi)
 **# 1.排他性检验: Y=IV+C → Y=IV+X+C
-reg bank_loan_restrict_rate isi $restrict_control i.industry i.company_ownership i.bank_type [aweight=weight], r
+reg bank_loan_restrict_rate internet_penetration_1 $restrict_control i.industry i.company_ownership i.bank_type [aweight=weight], r
 estimates store withoutX 
-reg bank_loan_restrict_rate dfh isi $restrict_control i.industry i.company_ownership i.bank_type [aweight=weight], r
+reg bank_loan_restrict_rate dfh internet_penetration_1 $restrict_control i.industry i.company_ownership i.bank_type [aweight=weight], r
 estimates store withX 
 estimates table withoutX withX, star (0.05 0.01 0.001)
 
-reg bank_loan_restrict_rate internet_penetration $restrict_control i.industry i.company_ownership i.bank_type [aweight=weight], r
+reg bank_loan_restrict_rate phone_rural $restrict_control i.industry i.company_ownership i.bank_type [aweight=weight], r
 estimates store withoutX 
-reg bank_loan_restrict_rate dfh internet_penetration $restrict_control i.industry i.company_ownership i.bank_type [aweight=weight], r
+reg bank_loan_restrict_rate dfh phone_rural $restrict_control i.industry i.company_ownership i.bank_type [aweight=weight], r
 estimates store withX 
 estimates table withoutX withX, star (0.05 0.01 0.001)
 
-**# 2.两阶段最小二乘: 
+**# 2.两阶段最小二乘: user_number_1 internet_penetration_1 user_size_growth_rate_1 distance_metres distance_miles distance_sphere phone_sum phone_urban phone_rural phone_mobile
 // b=-0.579>-0.580(主要为解释变量的测量误差导致向下偏差),p=0.000
 **# 2.1 第一阶段: b=1.033,-0.064 p=0.000,0.000
-ivregress 2sls bank_loan_restrict_rate $restrict_control i.industry i.company_ownership i.bank_type (dfh=isi internet_penetration), r first
+ivregress 2sls bank_loan_restrict_rate $restrict_control i.industry i.company_ownership i.bank_type (dfh=phone_rural internet_penetration_1), r first
+
 **# 2.2豪斯曼检验: p=0.0597,0.0618
 estat endogenous
 **# 2.3弱工具变量检验: F=13878.3>19.93
