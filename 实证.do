@@ -78,6 +78,7 @@ estimates table withoutX withX, star (0.05 0.01 0.001)
 **# 2.两阶段最小二乘: user_number_1 internet_penetration_1 user_size_growth_rate_1 distance_metres distance_miles distance_sphere phone_sum phone_urban phone_rural phone_mobile
 // b=-0.579>-0.580(主要为解释变量的测量误差导致向下偏差),p=0.000
 **# 2.1 第一阶段: b=1.033,-0.064 p=0.000,0.000
+replace phone_rural = phone_rural*0.001
 ivregress 2sls bank_loan_restrict_rate $restrict_control i.industry i.company_ownership i.bank_type (dfh=phone_rural internet_penetration_1), r first
 
 **# 2.2豪斯曼检验: p=0.0597,0.0618
@@ -94,14 +95,14 @@ predict z if e(sample), xb
 generate phi=normalden(z)
 generate PHI=normal(z)
 generate lambda=phi/(1-PHI)
-ivregress 2sls bank_loan_restrict_rate lambda $restrict_control i.industry i.company_ownership i.bank_type (dfh=isi internet_penetration), r first
+ivregress 2sls bank_loan_restrict_rate lambda $restrict_control i.industry i.company_ownership i.bank_type (dfh=phone_rural internet_penetration_1), r first
 restore
 
 **********************************************************************
 
 **# 创新
 **# 1.is_inno
-bdiff,group(is_inno) model(reg bank_loan_restrict_rate dfh $restrict_control, r) reps(500) bsample // b0-b1=-0.252,p=0.030
+bdiff,group(is_inno) model(reg bank_loan_restrict_rate dfh $restrict_control, r) reps(1000) bsample // b0-b1=-0.252,p=0.030
 qui reg bank_loan_restrict_rate dfh $restrict_control if is_inno==0, r
 estimates store is_inno_0
 qui reg bank_loan_restrict_rate dfh $restrict_control if is_inno==1, r
@@ -109,7 +110,7 @@ estimates store is_inno_1
 estimates table is_inno_0 is_inno_1
 
 **# 2.is_inno_product_output
-bdiff,group(is_inno_product_output) model(reg bank_loan_restrict_rate dfh $restrict_control, r) reps(500) bsample // b0-b1=-0.308,p=0.004
+bdiff,group(is_inno_product_output) model(reg bank_loan_restrict_rate dfh $restrict_control, r) reps(1000) bsample // b0-b1=-0.308,p=0.004
 qui reg bank_loan_restrict_rate dfh $restrict_control if is_inno_product_output==0, r
 estimates store is_inno_product_output_0
 qui reg bank_loan_restrict_rate dfh $restrict_control if is_inno_product_output==1, r
@@ -117,7 +118,7 @@ estimates store is_inno_product_output_1
 estimates table is_inno_product_output_0 is_inno_product_output_1
 
 **# 3.is_inno_tech_output
-bdiff,group(is_inno_tech_output) model(reg bank_loan_restrict_rate dfh $restrict_control, r) reps(500) bsample // b0-b1=-0.366,p=0.008
+bdiff,group(is_inno_tech_output) model(reg bank_loan_restrict_rate dfh $restrict_control, r) reps(1000) bsample // b0-b1=-0.366,p=0.008
 qui reg bank_loan_restrict_rate dfh $restrict_control if is_inno_tech_output==0, r
 estimates store is_inno_tech_output_0
 qui reg bank_loan_restrict_rate dfh $restrict_control if is_inno_tech_output==1, r

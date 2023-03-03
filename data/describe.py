@@ -2,7 +2,7 @@
 # @Author: 昵称有六个字
 # @Date:   2023-02-28 20:59:12
 # @Last Modified by:   昵称有六个字
-# @Last Modified time: 2023-03-02 21:28:13
+# @Last Modified time: 2023-03-03 00:01:06
 import math
 import pandas as pd
 from icecream import ic
@@ -39,4 +39,4 @@ ic(df)
 # profile = ProfileReport(df)
 # profile.to_file("data/describe.html")
 df['missing_number'] = df['missing_number'].map(lambda x:math.exp(x)-1)
-df[miss_group].to_excel("describe.xlsx", index=0)
+# df[miss_group].to_excel("describe.xlsx", index=0)

@@ -2,7 +2,7 @@
 # @Author: 昵称有六个字
 # @Date:   2023-02-22 23:49:06
 # @Last Modified by:   昵称有六个字
-# @Last Modified time: 2023-02-28 21:34:43
+# @Last Modified time: 2023-03-03 00:02:00
 # -- coding: utf-8 --
 import warnings
 from pprint import pprint
@@ -1960,7 +1960,7 @@ class Interest(Controls):
         self.df_other_rate["date(-1)"] = self.df_other_rate["date"].shift(-1)
         self.df_other_rate["date_diff"] = (
             (self.df_other_rate["date(-1)"] - self.df_other_rate["date"])
-            .astype("timedelta64[D]")
+            .astype("timedelta64[D]")  # type: ignore
             .fillna(0)
             .map(lambda x: int(x) if x != 0 else np.nan)
         )
