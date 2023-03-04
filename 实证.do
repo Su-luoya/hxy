@@ -134,25 +134,29 @@ estimates table is_inno_tech_output_0 is_inno_tech_output_1
 bdiff,group(is_buy_internet) model(reg bank_loan_restrict_rate dfh $restrict_control, r) reps(500) bsample // 全样本: p=0.246 n=1086
 **# 分行业
 preserve
-keep if industry_class==0 // 零售行业: p=0.000 n=709
-bdiff,group(is_buy_internet) model(reg bank_loan_restrict_rate dfh $restrict_control, r) reps(500) bsample 
+keep if industry_class==0 // 零售行业: p=0.004 n=709
+bdiff,group(is_buy_internet) model(reg bank_loan_restrict_rate dfh $restrict_control, r) reps(1000) bsample 
+reg bank_loan_restrict_rate dfh is_buy_internet $restrict_control, r
 restore
 preserve
-keep if industry_class==1 // 其他行业: p=0.412 n=278
-bdiff,group(is_buy_internet) model(reg bank_loan_restrict_rate dfh $restrict_control, r) reps(500) bsample 
+keep if industry_class==1 // 其他行业: p=0.401 n=278
+bdiff,group(is_buy_internet) model(reg bank_loan_restrict_rate dfh $restrict_control, r) reps(1000) bsample
+reg bank_loan_restrict_rate dfh is_buy_internet $restrict_control, r
 restore
 
-**# 1.2 buy_internet_amount_group buy_internet_rate_group（核心2）
+**# 1.2 buy_internet_amount_group（核心2）
 **# 总体
 bdiff,group(buy_internet_amount_group) model(reg bank_loan_restrict_rate dfh $restrict_control, r) reps(500) bsample // 全样本: p=0.298 n=1151
 **# 分行业
 preserve
-keep if industry_class==0 // 零售行业: p=0.016 n=760
-bdiff,group(buy_internet_amount_group) model(reg bank_loan_restrict_rate dfh $restrict_control, r) reps(500) bsample
+keep if industry_class==0 // 零售行业: p=0.021 n=701
+bdiff,group(buy_internet_amount_group) model(reg bank_loan_restrict_rate dfh $restrict_control, r) reps(1000) bsample
+reg bank_loan_restrict_rate dfh buy_internet_amount_group $restrict_control, r
 restore
 preserve
-keep if industry_class==1 // 其他行业: p=0.278 n=343
-bdiff,group(buy_internet_amount_group) model(reg bank_loan_restrict_rate dfh $restrict_control, r) reps(500) bsample 
+keep if industry_class==1 // 其他行业: p=0.304 n=343
+bdiff,group(buy_internet_amount_group) model(reg bank_loan_restrict_rate dfh $restrict_control, r) reps(1000) bsample 
+reg bank_loan_restrict_rate dfh buy_internet_amount_group $restrict_control, r
 restore
 
 **# 1.3 buy_internet_rate_group（核心3）
@@ -160,12 +164,14 @@ restore
 bdiff,group(buy_internet_rate_group) model(reg bank_loan_restrict_rate dfh $restrict_control, r) reps(500) bsample // 全样本: p=0.030 n=1050
 **# 分行业
 preserve
-keep if industry_class==0 // 零售行业: p=0.026 n=701
-bdiff,group(buy_internet_amount_group) model(reg bank_loan_restrict_rate dfh $restrict_control, r) reps(500) bsample
+keep if industry_class==0 // 零售行业: p=0.018 n=670
+bdiff,group(buy_internet_rate_group) model(reg bank_loan_restrict_rate dfh $restrict_control, r) reps(1000) bsample
+reg bank_loan_restrict_rate dfh buy_internet_rate_group $restrict_control, r
 restore
 preserve
-keep if industry_class==1 // 其他行业: p=0.142 n=288
+keep if industry_class==1 // 其他行业: p=0.082 n=288
 bdiff,group(buy_internet_rate_group) model(reg bank_loan_restrict_rate dfh $restrict_control, r) reps(500) bsample 
+reg bank_loan_restrict_rate dfh buy_internet_rate_group $restrict_control, r
 restore
 
 
@@ -189,14 +195,14 @@ bdiff,group(is_sell_internet) model(reg bank_loan_restrict_rate dfh $restrict_co
 restore
 
 **********************************************************************
-
+reg bank_loan_restrict_rate dfh $restrict_control i.industry i.company_ownership i.bank_type [aweight=weight], r
 **# 民间借贷 → 挤出效应
 center dfh private_loan_restrict_rate 
-**# 1.总体: b=-0.329, p=0.000, n=2466
+**# 1.总体: b=-0.327, p=0.000, n=2466
 reg bank_loan_restrict_rate dfh private_loan_restrict_rate c.c_private_loan_restrict_rate#c.c_dfh $restrict_control i.industry i.company_ownership i.bank_type [aweight=weight], r
 **# 2.1分招待费
 reg bank_loan_restrict_rate dfh private_loan_restrict_rate c.c_private_loan_restrict_rate#c.c_dfh $restrict_control i.industry i.company_ownership i.bank_type [aweight=weight] if treat_cost_group==1, r // p=0.000,0.000, n=1263
-reg bank_loan_restrict_rate dfh private_loan_restrict_rate c.c_private_loan_restrict_rate#c.c_dfh $restrict_control i.province i.industry i.company_ownership i.bank_type [aweight=weight] if treat_cost_group==0, r // p=0.024,0.022, n=1162
+reg bank_loan_restrict_rate dfh private_loan_restrict_rate c.c_private_loan_restrict_rate#c.c_dfh $restrict_control i.industry i.company_ownership i.bank_type [aweight=weight] if treat_cost_group==0, r // p=0.024,0.022, n=1162
 **# 2.2分融资偏好
 reg bank_loan_restrict_rate dfh private_loan_restrict_rate c.c_private_loan_restrict_rate#c.c_dfh $restrict_control i.industry i.company_ownership i.bank_type [aweight=weight] if loan_preference_2==1, r // p=0.014,0.157, n=1263
 reg bank_loan_restrict_rate dfh private_loan_restrict_rate c.c_private_loan_restrict_rate#c.c_dfh $restrict_control i.industry i.company_ownership i.bank_type [aweight=weight] if loan_preference_2!=1, r // p=0.002,0.001, n=1229
