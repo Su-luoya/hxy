@@ -197,14 +197,15 @@ restore
 **********************************************************************
 reg bank_loan_restrict_rate dfh $restrict_control i.industry i.company_ownership i.bank_type [aweight=weight], r
 **# 民间借贷 → 挤出效应
-center dfh private_loan_restrict_rate 
-**# 1.总体: b=-0.327, p=0.000, n=2466
-reg bank_loan_restrict_rate dfh private_loan_restrict_rate c.c_private_loan_restrict_rate#c.c_dfh $restrict_control i.industry i.company_ownership i.bank_type [aweight=weight], r
+replace all_private_loan = log(all_private_loan+1)
+center dfh all_private_loan
+**# 1.总体: n=3003
+reg bank_loan_restrict_rate dfh all_private_loan c.c_all_private_loan#c.c_dfh $restrict_control i.industry i.company_ownership i.bank_type [aweight=weight], r
 **# 2.1分招待费
-reg bank_loan_restrict_rate dfh private_loan_restrict_rate c.c_private_loan_restrict_rate#c.c_dfh $restrict_control i.industry i.company_ownership i.bank_type [aweight=weight] if treat_cost_group==1, r // p=0.000,0.000, n=1263
-reg bank_loan_restrict_rate dfh private_loan_restrict_rate c.c_private_loan_restrict_rate#c.c_dfh $restrict_control i.industry i.company_ownership i.bank_type [aweight=weight] if treat_cost_group==0, r // p=0.024,0.022, n=1162
+reg bank_loan_restrict_rate dfh all_private_loan c.c_all_private_loan#c.c_dfh $restrict_control i.industry i.company_ownership i.bank_type [aweight=weight] if treat_cost_group==1, r // p=0.000,0.011, n=1595
+reg bank_loan_restrict_rate dfh all_private_loan c.c_all_private_loan#c.c_dfh $restrict_control i.industry i.company_ownership i.bank_type [aweight=weight] if treat_cost_group==0, r // p=0.000,0.661, n=1355
 **# 2.2分融资偏好
-reg bank_loan_restrict_rate dfh private_loan_restrict_rate c.c_private_loan_restrict_rate#c.c_dfh $restrict_control i.industry i.company_ownership i.bank_type [aweight=weight] if loan_preference_2==1, r // p=0.014,0.157, n=1263
-reg bank_loan_restrict_rate dfh private_loan_restrict_rate c.c_private_loan_restrict_rate#c.c_dfh $restrict_control i.industry i.company_ownership i.bank_type [aweight=weight] if loan_preference_2!=1, r // p=0.002,0.001, n=1229
+reg bank_loan_restrict_rate dfh all_private_loan c.c_all_private_loan#c.c_dfh $restrict_control i.industry i.company_ownership i.bank_type [aweight=weight] if loan_preference_2==1, r // p=0.003,0.924, n=1237
+reg bank_loan_restrict_rate dfh all_private_loan c.c_all_private_loan#c.c_dfh $restrict_control i.industry i.company_ownership i.bank_type [aweight=weight] if loan_preference_2!=1, r // p=0.000,0.006, n=1766
 
 **********************************************************************
